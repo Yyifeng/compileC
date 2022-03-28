@@ -26,7 +26,9 @@ namespace C100 {
         Add,
         Sub,
         Mul,
-        Div
+        Div,
+        LParent,
+        RParent
     };
 
     class BinaryNode : public AstNode {

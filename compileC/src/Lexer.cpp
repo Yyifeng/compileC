@@ -27,6 +27,12 @@ void C100::Lexer::getNextToken() {
     } else if (curChar == '/') {
         kind = TokenKind::Div;
         getNextChar();
+    } else if (curChar == '(') {
+        kind = TokenKind::LParent;
+        getNextChar();
+    } else if (curChar == ')') {
+        kind = TokenKind::RParent;
+        getNextChar();
     } else if (isdigit(curChar)) {
         kind = TokenKind::Num;
         value = 0;

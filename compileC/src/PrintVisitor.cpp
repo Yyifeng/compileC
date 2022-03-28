@@ -7,9 +7,9 @@
 using namespace C100;
 
 void PrintVisitor::visitorProgramNode(ProgramNode *node) {
-    printf("Program: ");
+//    printf("Program: ");
     node->Lhs->Accept(this);
-    printf("\n");
+//    printf("\n");
 }
 
 void PrintVisitor::VisitorBinaryNode(BinaryNode *node) {
@@ -17,16 +17,20 @@ void PrintVisitor::VisitorBinaryNode(BinaryNode *node) {
     node->Lhs->Accept(this);
     switch (node->binOp) {
         case BinaryOperator::Add:
-            printf(" + ");
+//            printf(" + ");
+            content += "+" ;
             break;
         case BinaryOperator::Sub:
             printf(" - ");
+            content += "-";
             break;
         case BinaryOperator::Mul:
-            printf(" * ");
+//            printf(" * ");
+            content += "*";
             break;
         case BinaryOperator::Div:
-            printf(" / ");
+//            printf(" / ");
+            content += "/";
             break;
         default:
             printf("error operator\n");
@@ -35,5 +39,6 @@ void PrintVisitor::VisitorBinaryNode(BinaryNode *node) {
 }
 
 void PrintVisitor::VisitorConstantNode(ConstantNode *node) {
-    printf(" %d ", node->value);
+//    printf(" %d ", node->value);
+    content += std::to_string(node->value);
 }

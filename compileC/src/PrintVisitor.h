@@ -6,11 +6,13 @@
 #define COMPILEC_PRINTVISITOR_H
 
 #include "AstNode.h"
+#include <string>
 
 namespace C100 {
 
     class PrintVisitor : public AstVisitor{
     public:
+        std::string content;
         void visitorProgramNode(ProgramNode *node) override;
 
     private:

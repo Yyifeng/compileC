@@ -17,7 +17,7 @@ std::shared_ptr<AstNode> Parser::parseExpr() {
 }
 
 std::shared_ptr<AstNode> Parser::parseAddExpr() {
-    std::shared_ptr<AstNode> left = parseMultiExpr();
+    std::shared_ptr<AstNode> left = parseMultiExpr();       ///first judge Mul and Div, then judge Add and Sub
     while (lexer.currentToken->kind == TokenKind::Add
            || lexer.currentToken->kind == TokenKind::Sub) {
         BinaryOperator binaryOperator = BinaryOperator::Add;
@@ -51,8 +51,15 @@ std::shared_ptr<AstNode> Parser::parseMultiExpr() {
 }
 
 std::shared_ptr<AstNode> Parser::parsePrimaryExpr() {
-    auto node = std::make_shared<ConstantNode>();
-    node->value = lexer.currentToken->value;
-    lexer.getNextToken();
-    return node;
+    if (lexer.currentToken->kind == TokenKind::LParent) {
+        lexer.getNextToken();
+        auto node = parseExpr();
+        lexer.getNextToken();
+        return node;
+    } else {
+        auto node = std::make_shared<ConstantNode>();
+        node->value = lexer.currentToken->value;
+        lexer.getNextToken();
+        return node;
+    }
 }

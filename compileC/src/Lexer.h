@@ -16,6 +16,8 @@ namespace C100
         Mul,
         Div,
         Num,
+        LParent,
+        RParent,
         Eof
     };
     class Token

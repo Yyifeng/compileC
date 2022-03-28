@@ -21,6 +21,7 @@ namespace C100
         std::shared_ptr<AstNode> parseExpr();
         std::shared_ptr<AstNode> parseAddExpr();
         std::shared_ptr<AstNode> parseMultiExpr();
+        std::shared_ptr<AstNode> parseParentExpr();
         std::shared_ptr<AstNode> parsePrimaryExpr();
     };
 }
