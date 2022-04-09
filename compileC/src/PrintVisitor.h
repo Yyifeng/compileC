@@ -13,9 +13,12 @@ namespace C100 {
     class PrintVisitor : public AstVisitor{
     public:
         std::string content;
-        void visitorProgramNode(ProgramNode *node) override;
+        void VisitorProgramNode(ProgramNode *node) override;
 
     private:
+        void VisitorStmtsNode(ExprStmtsNode *node) override;
+        void VisitorVarExprNode(VarExprNode *node) override;
+        void VisitorAssignExprNode(AssignExprNode *node) override;
         void VisitorBinaryNode(BinaryNode *node) override;
         void VisitorConstantNode(ConstantNode *node) override;
     };

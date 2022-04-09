@@ -4,11 +4,15 @@
 #include "../src/PrintVisitor.h"
 
 using namespace C100;
-TEST_CASE("compileC_testLexer", "5  + (1 - 3)*4 /  2") {
-    const char *code = "5  + (1 - 3)*4 /  2" ;
+TEST_CASE("compileC_testLexer", "lexer") {
+    const char *code = "5  +ab_c233de + (1 - 3)*4 /  2;" ;
     Lexer lexer(code);
     lexer.getNextToken();
     REQUIRE("5" == lexer.currentToken->content);
+    lexer.getNextToken();
+    REQUIRE("+" == lexer.currentToken->content);
+    lexer.getNextToken();
+    REQUIRE("ab_c233de" == lexer.currentToken->content);
     lexer.getNextToken();
     REQUIRE("+" == lexer.currentToken->content);
     lexer.getNextToken();
@@ -30,11 +34,13 @@ TEST_CASE("compileC_testLexer", "5  + (1 - 3)*4 /  2") {
     lexer.getNextToken();
     REQUIRE("2" == lexer.currentToken->content);
     lexer.getNextToken();
+    REQUIRE(";" == lexer.currentToken->content);
+    lexer.getNextToken();
     REQUIRE(TokenKind::Eof == lexer.currentToken->kind);
 }
 
-TEST_CASE("compileC_testParse", "5  + (1 - 3)*4 /  2") {
-    const char *code = "5  + (1 - 3)*4 /  2" ;
+TEST_CASE("compileC_testParse1", "parser1") {
+    const char *code = "5  + (1 - 3)*4 /  2;abc12+2;" ;
     Lexer lex(code);
     lex.getNextToken();
 
@@ -44,5 +50,19 @@ TEST_CASE("compileC_testParse", "5  + (1 - 3)*4 /  2") {
     auto root = parser.parse();
     root->Accept(&printVisitor);
 
-    REQUIRE("2431-*/5+" == printVisitor.content);
+    REQUIRE("5+1-3*4/2;abc12+2;" == printVisitor.content);
+}
+
+TEST_CASE("compileC_testParse2", "parser2") {
+    const char *code = " a = 3; a; a+5+ (1 - 3)*4 /  2;bc;" ;
+    Lexer lex(code);
+    lex.getNextToken();
+
+    Parser parser(lex);
+    PrintVisitor printVisitor;
+
+    auto root = parser.parse();
+    root->Accept(&printVisitor);
+
+    REQUIRE("a=3;a;a+5+1-3*4/2;bc;" == printVisitor.content);
 }

@@ -3,17 +3,22 @@
 //
 
 #include "Parser.h"
+#include "Diag.h"
 
 using namespace C100;
 
 std::shared_ptr<ProgramNode> Parser::parse() {
     auto node = std::make_shared<ProgramNode>();
-    node->Lhs = parseExpr();
+    locals = &node->LocalVars;                  //add obj by node->localVars
+    while (lexer.currentToken->kind != TokenKind::Eof) {
+        node->Stmts.push_back(parseStmt());
+    }
+
     return node;
 }
 
 std::shared_ptr<AstNode> Parser::parseExpr() {
-    return parseAddExpr();
+    return parseAssignExpr();
 }
 
 std::shared_ptr<AstNode> Parser::parseAddExpr() {
@@ -54,12 +59,62 @@ std::shared_ptr<AstNode> Parser::parsePrimaryExpr() {
     if (lexer.currentToken->kind == TokenKind::LParent) {
         lexer.getNextToken();
         auto node = parseExpr();
-        lexer.getNextToken();
+        lexer.expectToken(TokenKind::RParent);
         return node;
-    } else {
+    } else if (lexer.currentToken->kind == TokenKind::Num) {
         auto node = std::make_shared<ConstantNode>();
         node->value = lexer.currentToken->value;
         lexer.getNextToken();
         return node;
+    } else if (lexer.currentToken->kind == TokenKind::Identifier) {
+        auto node = std::make_shared<VarExprNode>();
+
+        auto obj = findLocalVar(lexer.currentToken->content);
+        if (!obj) {
+            obj = makeLocalVar(lexer.currentToken->content);
+        }
+        node->varObj = obj;
+        lexer.getNextToken();
+        return node;
+    } else {
+        DiagError(lexer.sourceCode, lexer.currentToken->location.row, lexer.currentToken->location.col, " not support node! ");
     }
+    return nullptr;
+}
+
+std::shared_ptr<AstNode> Parser::parseStmt() {
+    auto node = std::make_shared<ExprStmtsNode>();
+    node->Lhs = parseExpr();
+    assert(lexer.currentToken->kind == TokenKind::Semicolon);
+    lexer.getNextToken();
+    return node;
+}
+
+std::shared_ptr<AstNode> Parser::parseAssignExpr() {
+    auto left = parseAddExpr();
+
+    if (lexer.currentToken->kind == TokenKind::Assign) {
+        lexer.getNextToken();
+        auto node = std::make_shared<AssignExprNode>();
+        node->Lhs = left;
+        node->Rhs = parseAssignExpr();
+        return node;
+    }
+    return left;
+}
+
+std::shared_ptr<Var> Parser::makeLocalVar(std::string_view name) {
+    auto obj = std::make_shared<Var>();
+    obj->name = name;
+    obj->offset = 0;
+    locals->push_front(obj);
+    localsMap[name] = obj;
+    return obj;
+}
+
+std::shared_ptr<Var> Parser::findLocalVar(std::string_view name) {
+    if (localsMap.find(name) != localsMap.end()) {
+        return localsMap[name];
+    }
+    return nullptr;
 }

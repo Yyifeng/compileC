@@ -15,7 +15,7 @@ namespace C100 {
 
     public:
         CodeGen() {};
-        void visitorProgramNode(ProgramNode *node) override;
+        void VisitorProgramNode(ProgramNode *node) override;
 
     private:
         void VisitorBinaryNode(BinaryNode *node) override;

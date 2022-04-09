@@ -6,39 +6,50 @@
 
 using namespace C100;
 
-void PrintVisitor::visitorProgramNode(ProgramNode *node) {
-//    printf("Program: ");
-    node->Lhs->Accept(this);
-//    printf("\n");
+void PrintVisitor::VisitorProgramNode(ProgramNode *node) {
+    for(auto &a : node->Stmts) {
+        a->Accept(this);
+    }
 }
 
 void PrintVisitor::VisitorBinaryNode(BinaryNode *node) {
-    node->Rhs->Accept(this);
+
     node->Lhs->Accept(this);
     switch (node->binOp) {
         case BinaryOperator::Add:
-//            printf(" + ");
             content += "+" ;
             break;
         case BinaryOperator::Sub:
-            printf(" - ");
             content += "-";
             break;
         case BinaryOperator::Mul:
-//            printf(" * ");
             content += "*";
             break;
         case BinaryOperator::Div:
-//            printf(" / ");
             content += "/";
             break;
         default:
             printf("error operator\n");
             assert(0);
     }
+    node->Rhs->Accept(this);
 }
 
 void PrintVisitor::VisitorConstantNode(ConstantNode *node) {
-//    printf(" %d ", node->value);
     content += std::to_string(node->value);
+}
+
+void PrintVisitor::VisitorStmtsNode(ExprStmtsNode *node) {
+    node->Lhs->Accept(this);
+    content += ";";
+}
+
+void PrintVisitor::VisitorVarExprNode(VarExprNode *node) {
+    content += std::string(node->varObj->name);
+}
+
+void PrintVisitor::VisitorAssignExprNode(AssignExprNode *node) {
+    node->Lhs->Accept(this);
+    content += "=";
+    node->Rhs->Accept(this);
 }

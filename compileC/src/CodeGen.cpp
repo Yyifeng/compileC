@@ -6,7 +6,7 @@
 
 using namespace C100;
 
-void CodeGen::visitorProgramNode(ProgramNode *node) {
+void CodeGen::VisitorProgramNode(ProgramNode *node) {
     printf("\t.text\n");
 #ifdef __linux__
     printf("\t.global prog\n");
@@ -17,11 +17,17 @@ void CodeGen::visitorProgramNode(ProgramNode *node) {
     printf("_prog:\n");
 #endif
 
+    int stackSize = 0;
+    for (auto &v : node->LocalVars) {
+        stackSize += 8;
+        v->offset = 8;
+    }
+
     printf("\tpush %%rbp\n");
     printf("\tmov %%rsp, %%rbp\n");
     printf("\tsub $32, %%rsp\n");
 
-    node->Lhs->Accept(this);
+//    node->Lhs->Accept(this);
     assert(stackLevel == 0);
 
     printf("\tmov %%rbp, %%rsp\n");

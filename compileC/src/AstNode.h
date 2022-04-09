@@ -6,6 +6,8 @@
 #define COMPILEC_ASTNODE_H
 
 #include <memory>
+#include <list>
+#include <string_view>
 
 namespace C100 {
 
@@ -16,10 +18,23 @@ namespace C100 {
         virtual void Accept(AstVisitor *visitor) {} ;
     };
 
+    class Var {
+    public:
+        std::string_view name;
+        int offset;
+    };
+
     class ProgramNode : public AstNode{
     public:
-        std::shared_ptr<AstNode> Lhs;
+        std::list<std::shared_ptr<AstNode> > Stmts;
+        std::list<std::shared_ptr<Var> > LocalVars;
         virtual void Accept(AstVisitor *visitor) override;
+    };
+
+    class ExprStmtsNode : public AstNode {
+    public:
+        std::shared_ptr<AstNode> Lhs;
+        void Accept(AstVisitor *visitor) override;
     };
 
     enum class BinaryOperator {
@@ -27,8 +42,6 @@ namespace C100 {
         Sub,
         Mul,
         Div,
-        LParent,
-        RParent
     };
 
     class BinaryNode : public AstNode {
@@ -45,11 +58,27 @@ namespace C100 {
         virtual void Accept(AstVisitor *visitor) override;
     };
 
+    class VarExprNode : public AstNode {
+    public:
+        std::shared_ptr<Var> varObj;
+        virtual void Accept(AstVisitor *visitor) override;
+    };
+
+    class AssignExprNode : public AstNode {
+    public:
+        std::shared_ptr<AstNode> Lhs;
+        std::shared_ptr<AstNode> Rhs;
+        virtual void Accept(AstVisitor *visitor) override;
+    };
+
     class AstVisitor {
     public:
         virtual ~AstVisitor() {};       ///base class need virtual deconstruct, default deconstruct is not virtual
 
-        virtual void visitorProgramNode(ProgramNode *node) {};
+        virtual void VisitorProgramNode(ProgramNode *node) {};
+        virtual void VisitorVarExprNode(VarExprNode *node) {};
+        virtual void VisitorAssignExprNode(AssignExprNode *node) {};
+        virtual void VisitorStmtsNode(ExprStmtsNode *node) {};
         virtual void VisitorBinaryNode(BinaryNode *node) {};
         virtual void VisitorConstantNode(ConstantNode *node) {};
     };

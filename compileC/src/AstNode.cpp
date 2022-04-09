@@ -15,8 +15,18 @@ void ConstantNode::Accept(C100::AstVisitor *visitor) {
 }
 
 void ProgramNode::Accept(AstVisitor *visitor) {
-    visitor->visitorProgramNode(this);
+    visitor->VisitorProgramNode(this);
 }
 
 
+void ExprStmtsNode::Accept(AstVisitor *visitor) {
+    visitor->VisitorStmtsNode(this);
+}
 
+void VarExprNode::Accept(AstVisitor *visitor) {
+    visitor->VisitorVarExprNode(this);
+}
+
+void AssignExprNode::Accept(AstVisitor *visitor) {
+    visitor->VisitorAssignExprNode(this);
+}
