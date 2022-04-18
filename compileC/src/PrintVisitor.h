@@ -17,6 +17,8 @@ namespace C100 {
 
     private:
         void VisitorStmtsNode(ExprStmtsNode *node) override;
+        void VisitorIfStmtsNode(ifStmtNode *node) override ;
+        void VisitorBlockStmtsNode(blockStmtNode *node) override;
         void VisitorVarExprNode(VarExprNode *node) override;
         void VisitorAssignExprNode(AssignExprNode *node) override;
         void VisitorBinaryNode(BinaryNode *node) override;

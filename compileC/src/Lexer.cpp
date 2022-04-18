@@ -43,13 +43,49 @@ void Lexer::getNextToken() {
     } else if (curChar == ')') {
         kind = TokenKind::RParent;
         getNextChar();
-    } else if (curChar == ';') {
+    } else if (curChar == '{') {
+        kind = TokenKind::LBrace;
+        getNextChar();
+    } else if (curChar == '}') {
+        kind = TokenKind::RBrace;
+        getNextChar();
+    }
+    else if (curChar == ';') {
         kind = TokenKind::Semicolon;
         getNextChar();
     } else if (curChar == '=') {
         kind = TokenKind::Assign;
+        if (peekChar(1) == '=') {
+            kind = TokenKind::Equal;
+            getNextChar();
+        }
         getNextChar();
-    } else if (isdigit(curChar)) {
+    } else if (curChar == '!') {
+        if (peekChar(1) == '=') {
+            kind = TokenKind::PipeEqual;
+            getNextChar();
+        } else {
+            DiagError(sourceCode, currentToken->location, "current '%c' is illegal", curChar);
+        }
+        getNextChar();
+    } else if (curChar == '>') {
+        if (peekChar(1) == '=') {
+            kind = TokenKind::GreaterEqual;
+            getNextChar();
+        } else {
+            kind = TokenKind::Greater;
+        }
+        getNextChar();
+    } else if (curChar == '<') {
+        if (peekChar(1) == '=') {
+            kind = TokenKind::LesserEqual;
+            getNextChar();
+        } else {
+            kind = TokenKind::Lesser;
+        }
+        getNextChar();
+    }
+    else if (isdigit(curChar)) {
         kind = TokenKind::Num;
         value = 0;
         do {
@@ -61,9 +97,14 @@ void Lexer::getNextToken() {
         while (isLetterOrDigit()) {
             getNextChar();
         }
+        if (sourceCode.substr(start_pos, cursor-1-start_pos) == "if") {
+            kind = TokenKind::If;
+        } else if (sourceCode.substr(start_pos, cursor-1-start_pos) == "else") {
+            kind = TokenKind::Else;
+        }
     }
     else {
-        DiagError(sourceCode, location.row, location.col, "current '%c' is illegal", curChar);
+        DiagError(sourceCode, location, "current '%c' is illegal", curChar);
     }
 
     currentToken = std::make_shared<Token>();
@@ -98,7 +139,7 @@ void Lexer::expectToken(TokenKind kind) {
     if (currentToken->kind == kind) {
         getNextToken();
     } else {
-        DiagError(sourceCode, currentToken->location.row, currentToken->location.col, " '%s' is expected! ",
+        DiagError(sourceCode, currentToken->location, " '%s' is expected! ",
                   getTokenSimpleSpelling(kind));
     }
 }
@@ -117,4 +158,12 @@ const char *Lexer::getTokenSimpleSpelling(TokenKind kind) {
         default: break;
     }
     return nullptr;
+}
+
+char Lexer::peekChar(int distance) {
+    assert(distance >= 0);
+    if (cursor - 1 + distance < sourceCode.size()) {
+        return sourceCode[cursor - 1 + distance];
+    }
+    return '\0';
 }

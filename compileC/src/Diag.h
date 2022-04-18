@@ -6,9 +6,10 @@
 #define COMPILEC_DIAG_H
 
 #include <string_view>
+#include "Lexer.h"
 
 namespace C100 {
-    void DiagError(std::string_view code, int line, int col, const char *fmt ...);
+    void DiagError(std::string_view code, sourceLocation location, const char *fmt ...);
 }
 
 

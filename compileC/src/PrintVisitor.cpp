@@ -3,6 +3,7 @@
 //
 
 #include "PrintVisitor.h"
+#include <iostream>
 
 using namespace C100;
 
@@ -28,6 +29,24 @@ void PrintVisitor::VisitorBinaryNode(BinaryNode *node) {
         case BinaryOperator::Div:
             content += "/";
             break;
+        case BinaryOperator::Equal:
+            content += "==" ;
+            break;
+        case BinaryOperator::PipeEqual:
+            content += "!=";
+            break;
+        case BinaryOperator::Greater:
+            content += ">";
+            break;
+        case BinaryOperator::GreaterEqual:
+            content += ">=";
+            break;
+        case BinaryOperator::Lesser:
+            content += "<";
+            break;
+        case BinaryOperator::LesserEqual:
+            content += "<=";
+            break;
         default:
             printf("error operator\n");
             assert(0);
@@ -52,4 +71,24 @@ void PrintVisitor::VisitorAssignExprNode(AssignExprNode *node) {
     node->Lhs->Accept(this);
     content += "=";
     node->Rhs->Accept(this);
+}
+
+void PrintVisitor::VisitorIfStmtsNode(ifStmtNode *node) {
+    content += "if";
+    content += "(";
+    node->Cond->Accept(this);
+    content += ")";
+    node->Then->Accept(this);
+    if (node->Else) {
+        content += "else ";
+        node->Else->Accept(this);
+    }
+}
+
+void PrintVisitor::VisitorBlockStmtsNode(blockStmtNode *node) {
+    content += "{";
+    for (auto &s : node->Stmts) {
+        s->Accept(this);
+    }
+    content += "}";
 }

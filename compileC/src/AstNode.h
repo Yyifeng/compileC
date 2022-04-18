@@ -34,7 +34,22 @@ namespace C100 {
     class ExprStmtsNode : public AstNode {
     public:
         std::shared_ptr<AstNode> Lhs;
-        void Accept(AstVisitor *visitor) override;
+        virtual void Accept(AstVisitor *visitor) override;
+    };
+
+    class ifStmtNode : public AstNode {
+    public:
+        std::shared_ptr<AstNode> Cond{nullptr};
+        std::shared_ptr<AstNode> Then{nullptr};
+        std::shared_ptr<AstNode> Else{nullptr};
+
+        virtual void Accept(AstVisitor *visitor) override;
+    };
+
+    class blockStmtNode : public AstNode {
+    public:
+        std::list<std::shared_ptr<AstNode> > Stmts;
+        virtual void Accept(AstVisitor *visitor) override;
     };
 
     enum class BinaryOperator {
@@ -42,6 +57,12 @@ namespace C100 {
         Sub,
         Mul,
         Div,
+        Equal,
+        PipeEqual,
+        Greater,
+        GreaterEqual,
+        Lesser,
+        LesserEqual,
     };
 
     class BinaryNode : public AstNode {
@@ -79,6 +100,8 @@ namespace C100 {
         virtual void VisitorVarExprNode(VarExprNode *node) {};
         virtual void VisitorAssignExprNode(AssignExprNode *node) {};
         virtual void VisitorStmtsNode(ExprStmtsNode *node) {};
+        virtual void VisitorIfStmtsNode(ifStmtNode *node) {};
+        virtual void VisitorBlockStmtsNode(blockStmtNode *node) {};
         virtual void VisitorBinaryNode(BinaryNode *node) {};
         virtual void VisitorConstantNode(ConstantNode *node) {};
     };

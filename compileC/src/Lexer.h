@@ -18,9 +18,19 @@ namespace C100
         Num,
         LParent,
         RParent,
+        LBrace,
+        RBrace,
         Identifier,
         Semicolon,
         Assign,
+        Equal,
+        PipeEqual,
+        Greater,
+        GreaterEqual,
+        Lesser,
+        LesserEqual,
+        If,
+        Else,
         Eof
     };
 
@@ -58,6 +68,7 @@ namespace C100
         bool isLetter() const;
         bool isDigit() const;
         bool isLetterOrDigit();
+        char peekChar(int distance);
     };
 
 }
